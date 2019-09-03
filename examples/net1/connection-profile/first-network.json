@@ -1,0 +1,59 @@
+{
+	"name": "first-network",
+	"version": "1.0.0",
+	"client": {
+		"tlsEnable": true,
+		"adminUser": "admin",
+		"adminPassword": "adminpw",
+		"enableAuthentication": false,
+		"organization": "Org1TC",
+		"connection": {
+			"timeout": {
+				"peer": {
+					"endorser": "300"
+				},
+				"orderer": "300"
+			}
+		}
+	},
+	"channels": {
+		"tradechannel": {
+			"peers": {
+				"peer0.cc.tc.com": {}
+			},
+			"connection": {
+				"timeout": {
+					"peer": {
+						"endorser": "6000",
+						"eventHub": "6000",
+						"eventReg": "6000"
+					}
+				}
+			}
+		}
+	},
+	"organizations": {
+		"Org1TC": {
+			"mspid": "Org1TC",
+			"fullpath": true,
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/cc.tc.com/users/Admin@cc.tc.com/msp/keystore/2db27e577be5efc2707a10244bd33a225037e52d48cf346e93e505c6b577e81e_sk"
+			},
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/cc.tc.com/users/Admin@cc.tc.com/msp/signcerts/Admin@cc.tc.com-cert.pem"
+			}
+		}
+	},
+	"peers": {
+		"peer0.cc.tc.com": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/cc.tc.com/users/Admin@cc.tc.com/tls/ca.crt"
+			},
+			"url": "grpcs://peer0.cc.tc.com:7051",
+			"eventUrl": "grpcs://peer0.cc.tc.com:7053",
+			"grpcOptions": {
+				"ssl-target-name-override": "peer0.cc.tc.com"
+			}
+		}
+	}
+}

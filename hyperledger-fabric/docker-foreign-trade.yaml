@@ -1,0 +1,100 @@
+# The file extends docker-foreign-trade-base.yaml.
+
+version: '2'
+
+networks:
+  tradenwk:
+
+services:
+
+  orderer.tc.com:
+    extends:
+      file:   base/docker-foreign-trade-base.yaml
+      service: orderer.tc.com
+    container_name: orderer.tc.com
+    networks:
+      - tradenwk
+
+  peer0.cc.tc.com:
+    container_name: peer0.cc.tc.com
+    extends:
+      file:  base/docker-foreign-trade-base.yaml
+      service: peer0.cc.tc.com
+    networks:
+      - tradenwk
+
+  peer1.cc.tc.com:
+    container_name: peer1.cc.tc.com
+    extends:
+      file:  base/docker-foreign-trade-base.yaml
+      service: peer1.cc.tc.com
+    networks:
+      - tradenwk
+
+  peer0.bank.com:
+    container_name: peer0.bank.com
+    extends:
+      file:  base/docker-foreign-trade-base.yaml
+      service: peer0.bank.com
+    networks:
+      - tradenwk
+
+  peer1.bank.com:
+    container_name: peer1.bank.com
+    extends:
+      file:  base/docker-foreign-trade-base.yaml
+      service: peer1.bank.com
+    networks:
+      - tradenwk
+
+  peer0.shf.com:
+    container_name: peer0.shf.com
+    extends:
+      file:  base/docker-foreign-trade-base.yaml
+      service: peer0.shf.com
+    networks:
+      - tradenwk
+
+  peer1.shf.com:
+    container_name: peer1.shf.com
+    extends:
+      file:  base/docker-foreign-trade-base.yaml
+      service: peer1.shf.com
+    networks:
+      - tradenwk
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools
+    tty: true
+    environment:
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer1.cc.tc.com:7052
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.cc.tc.com:7051
+      - CORE_PEER_LOCALMSPID=Org1TC
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/cc.tc.com/peers/peer0.cc.tc.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/cc.tc.com/peers/peer0.cc.tc.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/cc.tc.com/peers/peer0.cc.tc.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/cc.tc.com/users/Admin@cc.tc.com/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash -c './scripts/script.sh ${CHANNEL_NAME} ${DELAY}; sleep $TIMEOUT'
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./chaincode/:/opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+        - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+    depends_on:
+      - orderer.tc.com
+      - peer0.cc.tc.com
+      - peer1.cc.tc.com
+      - peer0.bank.com
+      - peer1.bank.com
+      - peer0.shf.com
+      - peer1.shf.com
+    networks:
+      - tradenwk

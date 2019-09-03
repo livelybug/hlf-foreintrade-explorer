@@ -1,0 +1,26 @@
+#
+
+OrdererOrgs:
+  - Name: Orderer
+    Domain: tc.com
+    Specs:
+      - Hostname: orderer
+PeerOrgs:
+  - Name: Org1
+    Domain: cc.tc.com
+    Template:
+      Count: 2
+    Users:
+      Count: 2
+  - Name: Org2
+    Domain: bank.com
+    Template:
+      Count: 2
+    Users:
+      Count: 2
+  - Name: Org3
+    Domain: shf.com
+    Template:
+      Count: 2
+    Users:
+      Count: 1

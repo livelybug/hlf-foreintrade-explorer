@@ -1,0 +1,77 @@
+# The configtxgen tool uses the file for generating certificates
+
+Organizations:
+
+    - &OrdererOrg
+        Name: OrdererOrg
+        ID: OrdererMSP
+        MSPDir: crypto-config/ordererOrganizations/tc.com/msp
+
+    - &Org1
+        Name: Org1TC
+        ID: Org1TC
+        MSPDir: crypto-config/peerOrganizations/cc.tc.com/msp
+
+        AnchorPeers:
+            - Host: peer0.cc.tc.com
+              Port: 7051
+
+    - &Org2
+        Name: Org2BANK
+        ID: Org2BANK
+        MSPDir: crypto-config/peerOrganizations/bank.com/msp
+        AnchorPeers:
+            - Host: peer0.bank.com
+              Port: 7051
+
+    - &Org3
+        Name: Org3SHF
+        ID: Org3SHF
+        MSPDir: crypto-config/peerOrganizations/shf.com/msp
+        AnchorPeers:
+            - Host: peer0.shf.com
+              Port: 7051
+
+Orderer: &OrdererDefaults
+
+    OrdererType: solo
+    Addresses:
+        - orderer.tc.com:7050
+    BatchTimeout: 5s
+    BatchSize:
+        MaxMessageCount: 5
+        AbsoluteMaxBytes: 10 MB
+        PreferredMaxBytes: 512 KB
+
+    Kafka:
+       Brokers:
+            - 127.0.0.1:9092
+
+    Organizations:
+
+Application: &ApplicationDefaults
+
+    Organizations:
+
+
+Profiles:
+    TradeFinanceOrdererGenesis:
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+        Consortiums:
+            TradeComConsortium:
+                Organizations:
+                    - *Org1
+                    - *Org2
+                    - *Org3
+
+    TradeFinanceOrgsChannel:
+        Consortium: TradeComConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Org1
+                - *Org2
+                - *Org3
