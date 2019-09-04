@@ -2,7 +2,9 @@
 
 function restartFabric() {
     cd hyperledger-fabric
-    ./foreign-trade.sh -m restart
+    ./foreign-trade.sh -m down
+    sync
+    ./foreign-trade.sh -m up
     cd ..
 }
 

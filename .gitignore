@@ -6,7 +6,6 @@ explorer_1/scripts/bower_components/
 explorer_1/webcontent
 
 hyperledger-fabric/crypto-config
-hyperledger-fabric/channel-artifacts
 examples/net1/pgdata
 .idea
 release_notes
