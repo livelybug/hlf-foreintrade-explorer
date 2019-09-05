@@ -36,10 +36,10 @@ setGlobals () {
 		CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/cc.tc.com/users/Admin@cc.tc.com/msp
 		if [ $1 -eq 0 ]; then
 			CORE_PEER_ADDRESS=peer0.cc.tc.com:7051
-			CORE_PEER_CHAINCODELISTENADDRESS=peer0.cc.tc.com:7052
+			#CORE_PEER_CHAINCODELISTENADDRESS=peer0.cc.tc.com:7052
 		else
 			CORE_PEER_ADDRESS=peer1.cc.tc.com:7051
-			CORE_PEER_CHAINCODELISTENADDRESS=peer1.cc.tc.com:7052
+			#CORE_PEER_CHAINCODELISTENADDRESS=peer1.cc.tc.com:7052
 #			CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/cc.tc.com/users/Admin@cc.tc.com/msp
 		fi
 	elif [ $1 -eq 2 -o $1 -eq 3 ] ; then
@@ -83,7 +83,7 @@ setGlobals () {
 		CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/cc.tc.com/peers/peer0.cc.tc.com/tls/ca.crt
 		CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/cc.tc.com/users/User2@cc.tc.com/msp
 		CORE_PEER_ADDRESS=peer0.cc.tc.com:7051
-		CORE_PEER_CHAINCODELISTENADDRESS=peer0.cc.tc.com:7052
+		#CORE_PEER_CHAINCODELISTENADDRESS=peer0.cc.tc.com:7052
 		PEER=PEER0
 
 	 #Shipper
@@ -100,7 +100,7 @@ setGlobals () {
 		CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/cc.tc.com/peers/peer0.cc.tc.com/tls/ca.crt
 		CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/cc.tc.com/users/User1@cc.tc.com/msp
 		CORE_PEER_ADDRESS=peer1.cc.tc.com:7051
-		CORE_PEER_CHAINCODELISTENADDRESS=peer1.cc.tc.com:7052
+		#CORE_PEER_CHAINCODELISTENADDRESS=peer1.cc.tc.com:7052
 		PEER=PEER1
 
 	fi
@@ -290,73 +290,71 @@ echo "Installing chaincode on Org3SHF/peer0."
 installChaincode 4
 echo "Installing chaincode on Org3SHF/peer1."
 installChaincode 5
-echo
-
+echo ---------------------------
 #Instantiate chaincode
 echo "Instantiating chaincode on Org1TC/peer1."
 instantiateChaincode 1
-echo
-
+echo ---------------------------
 #Query chaincode on a different peer
 echo "Querying chaincode on Org2BANK/peer0."
 chaincodeQuery 2
-echo
+echo ---------------------------
+
+tradeRoutine()(
+while [ true ]
+do
 
 #Invoke CreateLOC by Importer Bank - Org2BANK-USER1
 echo "Sending Invoke-CreateLOC transaction by Org2BANK-USER1"
 chaincodeInvokeCreateLOC 6
 #User1 - Importer Bank
-echo
-
+echo ---------------------------
 #Query on chaincode on Org2BANK/peer0
 echo "Querying chaincode on Org2BANK/peer0."
 chaincodeQuery 2
-echo
-
+echo ---------------------------
 #Exporter Bank
 echo "Sending  Invoke-approveLOC by Org2BANK-USER2"
 chaincodeInvokeApproveLOC 7
-echo
-
+echo ---------------------------
 #Query on chaincode on Org3SHF/peer0
 echo "Querying chaincode on Org3SHF/peer1."
 chaincodeQuery 5
-echo
-
+echo ---------------------------
 #Seller
 echo "Sending invoke-InitiateShipment by Org1TC-USER2."
 chaincodeInvokeInitiateShipment 8
-echo
-
+echo ---------------------------
 #Query on chaincode on Org1TC/peer0
 echo "Querying chaincode on Org1TC/peer0."
 chaincodeQuery 0
-echo
-
+echo ---------------------------
 #Shipper
 echo "Sending invoke-DeliverGoods by Org3SHF-USER1."
 chaincodeInvokeDeliverGoods 9
 #user1 - shipper
-echo
-
+echo ---------------------------
 #Query on chaincode on Org1TC/peer1
 echo "Querying chaincode on Org1TC/peer1."
 chaincodeQuery 1
-echo
-
+echo ---------------------------
 #Buyer
 echo "Sending invoke-DeliverGoods by Org1TC-USER1."
 chaincodeInvokeShipmentDelivered 10
 #user1 - shipper
-echo
-
+echo ---------------------------
 echo "Querying chaincode for final status on Org1TC/peer1."
 chaincodeQuery 1
 
-echo
+echo ---------------------------
 echo "Foreign Trade  End to End application completed."
-echo
+echo ---------------------------
 
+sleep 3600
 
+done
+)
+
+tradeRoutine &
 
 exit 0

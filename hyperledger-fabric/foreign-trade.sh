@@ -75,16 +75,15 @@ function generateCerts (){
     echo "cryptogen tool not found. exiting"
     exit 1
   fi
-  echo
+  echo ---------------------------
   echo "Generate certificates using cryptogen tool .."
-  echo
-
+  echo ---------------------------
   cryptogen generate --config=./crypto-config.yaml
   if [ "$?" -ne 0 ]; then
     echo "Failed to generate certificates."
     exit 1
   fi
-  echo
+  echo ---------------------------
 }
 
 
@@ -103,14 +102,14 @@ function generateChannelArtifacts() {
     echo "Failed to generate orderer genesis block."
     exit 1
   fi
-  echo
+  echo ---------------------------
   echo "..Generating channel configuration transaction 'channel.tx'.."
   configtxgen -profile TradeFinanceOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
   if [ "$?" -ne 0 ]; then
     echo "Failed to generate channel configuration artifact."
     exit 1
   fi
-  echo
+  echo ---------------------------
 }
 
 # Obtain native binaries based on platform
@@ -150,12 +149,12 @@ fi
 
 if [ "${MODE}" == "up" ]; then
   networkUp
-  elif [ "${MODE}" == "down" ]; then 
+  elif [ "${MODE}" == "down" ]; then
   networkDown
-  elif [ "${MODE}" == "generate" ]; then 
+  elif [ "${MODE}" == "generate" ]; then
   generateCerts
   generateChannelArtifacts
-  elif [ "${MODE}" == "restart" ]; then 
+  elif [ "${MODE}" == "restart" ]; then
   networkDown
   networkUp
 else

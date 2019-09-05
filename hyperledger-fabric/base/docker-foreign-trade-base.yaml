@@ -1,7 +1,4 @@
 # Foreign Trade Docker Based Configuration
-# This file is extended by docker-foreign-trade.yaml
-# For details, refer to the book - Blockchain - A Definitive handbook
-#
 
 version: '2'
 
