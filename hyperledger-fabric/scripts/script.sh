@@ -10,7 +10,7 @@ LANGUAGE="golang"  #'golang' OR 'node'
 COUNTER=1
 MAX_RETRY=5
 ORDERER_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/tc.com/orderers/orderer.tc.com/msp/tlscacerts/tlsca.tc.com-cert.pem
-TRADE_ID="TC_2"
+TRADE_ID="1"
 CC_PATH="github.com/hyperledger/fabric/examples/chaincode/go/tradecontract"
 #if [ "$LANGUAGE" = "node" ]; then
 #CC_PATH="/opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go/tradecontract"
@@ -164,10 +164,11 @@ installChaincode () {
 instantiateChaincode () {
 	PEER=$1
 	setGlobals $PEER
+	argsstr='{"Args":["init","'"$TRADE_ID"'","TC_B_1","TC_S_1","SKU001","10","1"]}'
 	if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "false" ]; then
-		peer chaincode instantiate -o orderer.tc.com:7050 -C $CHANNEL_NAME -n foreigntradecc -l $LANGUAGE -v 1.0 -c '{"Args":["init","TC_2","TC_B_1","TC_S_1","SKU001","10","1"]}' -P "OR	('Org1TC.member','Org2BANK.member','Org3SHF.member')" >&log.txt
+		peer chaincode instantiate -o orderer.tc.com:7050 -C $CHANNEL_NAME -n foreigntradecc -l $LANGUAGE -v 1.0 -c $argsstr -P "OR	('Org1TC.member','Org2BANK.member','Org3SHF.member')" >&log.txt
 	else
-		peer chaincode instantiate -o orderer.tc.com:7050 --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n foreigntradecc -l $LANGUAGE -v 1.0 -c '{"Args":["init","TC_2","TC_B_1","TC_S_1","SKU001","10","1"]}' -P "OR ('Org1TC.member','Org2BANK.member','Org3SHF.member')" >&log.txt
+		peer chaincode instantiate -o orderer.tc.com:7050 --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n foreigntradecc -l $LANGUAGE -v 1.0 -c $argsstr -P "OR ('Org1TC.member','Org2BANK.member','Org3SHF.member')" >&log.txt
 	fi
 	res=$?
 	cat log.txt
@@ -183,12 +184,13 @@ chaincodeQuery () {
   local rc=1
   local starttime=$(date +%s)
 
+  argsstr='{"Args":["query","'"$TRADE_ID"'"]}'
   #Take time to sync across nodes
   while test "$(($(date +%s)-starttime))" -lt "$TIMEOUT" -a $rc -ne 0
   do
      sleep $DELAY
      echo "Attempting to Query PEER$PEER ...$(($(date +%s)-starttime)) secs"
-     peer chaincode query -C $CHANNEL_NAME -n foreigntradecc -c '{"Args":["query","TC_2"]}' >&log.txt
+     peer chaincode query -C $CHANNEL_NAME -n foreigntradecc -c $argsstr >&log.txt
   done
   echo
   cat log.txt
@@ -197,10 +199,11 @@ chaincodeQuery () {
 chaincodeInvokeCreateLOC() {
 	PEER=$1
 	setGlobals $PEER
+	argsstr='{"Args":["createLOC","'"$TRADE_ID"'"]}'
 	if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "false" ]; then
-		peer chaincode invoke -o orderer.tc.com:7050 -C $CHANNEL_NAME -n foreigntradecc -c '{"Args":["createLOC","TC_2"]}' >&log.txt
+		peer chaincode invoke -o orderer.tc.com:7050 -C $CHANNEL_NAME -n foreigntradecc -c $argsstr >&log.txt
 	else
-		peer chaincode invoke -o orderer.tc.com:7050  --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n foreigntradecc -c '{"Args":["createLOC","TC_2"]}' >&log.txt
+		peer chaincode invoke -o orderer.tc.com:7050  --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n foreigntradecc -c $argsstr >&log.txt
 	fi
 	res=$?
 	cat log.txt
@@ -212,10 +215,11 @@ chaincodeInvokeCreateLOC() {
 chaincodeInvokeApproveLOC () {
 	PEER=$1
 	setGlobals $PEER
+	argsstr='{"Args":["approveLOC","'"$TRADE_ID"'"]}'
 	if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "false" ]; then
-		peer chaincode invoke -o orderer.tc.com:7050 -C $CHANNEL_NAME -n foreigntradecc -c '{"Args":["approveLOC","TC_2"]}' >&log.txt
+		peer chaincode invoke -o orderer.tc.com:7050 -C $CHANNEL_NAME -n foreigntradecc -c $argsstr >&log.txt
 	else
-		peer chaincode invoke -o orderer.tc.com:7050  --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n foreigntradecc -c '{"Args":["approveLOC","TC_2"]}' >&log.txt
+		peer chaincode invoke -o orderer.tc.com:7050  --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n foreigntradecc -c $argsstr >&log.txt
 	fi
 	res=$?
 	cat log.txt
@@ -227,10 +231,11 @@ chaincodeInvokeApproveLOC () {
 chaincodeInvokeInitiateShipment () {
 	PEER=$1
 	setGlobals $PEER
+	argsstr='{"Args":["initiateShipment","'"$TRADE_ID"'"]}'
 	if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "false" ]; then
-		peer chaincode invoke -o orderer.tc.com:7050 -C $CHANNEL_NAME -n foreigntradecc -c '{"Args":["initiateShipment","TC_2"]}' >&log.txt
+		peer chaincode invoke -o orderer.tc.com:7050 -C $CHANNEL_NAME -n foreigntradecc -c $argsstr >&log.txt
 	else
-		peer chaincode invoke -o orderer.tc.com:7050  --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n foreigntradecc -c '{"Args":["initiateShipment","TC_2"]}' >&log.txt
+		peer chaincode invoke -o orderer.tc.com:7050  --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n foreigntradecc -c $argsstr >&log.txt
 	fi
 	res=$?
 	cat log.txt
@@ -242,10 +247,11 @@ chaincodeInvokeInitiateShipment () {
 chaincodeInvokeDeliverGoods () {
 	PEER=$1
 	setGlobals $PEER
+	argsstr='{"Args":["deliverGoods","'"$TRADE_ID"'"]}'
 	if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "false" ]; then
-		peer chaincode invoke -o orderer.tc.com:7050 -C $CHANNEL_NAME -n foreigntradecc -c '{"Args":["deliverGoods","TC_2"]}' >&log.txt
+		peer chaincode invoke -o orderer.tc.com:7050 -C $CHANNEL_NAME -n foreigntradecc -c $argsstr >&log.txt
 	else
-		peer chaincode invoke -o orderer.tc.com:7050  --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n foreigntradecc -c '{"Args":["deliverGoods","TC_2"]}' >&log.txt
+		peer chaincode invoke -o orderer.tc.com:7050  --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n foreigntradecc -c $argsstr >&log.txt
 	fi
 	res=$?
 	cat log.txt
@@ -258,10 +264,11 @@ chaincodeInvokeDeliverGoods () {
 chaincodeInvokeShipmentDelivered () {
 	PEER=$1
 	setGlobals $PEER
+	argsstr='{"Args":["shipmentDelivered","'"$TRADE_ID"'"]}'
 	if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "false" ]; then
-		peer chaincode invoke -o orderer.tc.com:7050 -C $CHANNEL_NAME -n foreigntradecc -c '{"Args":["shipmentDelivered","TC_2"]}' >&log.txt
+		peer chaincode invoke -o orderer.tc.com:7050 -C $CHANNEL_NAME -n foreigntradecc -c $argsstr >&log.txt
 	else
-		peer chaincode invoke -o orderer.tc.com:7050  --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n foreigntradecc -c '{"Args":["shipmentDelivered","TC_2"]}' >&log.txt
+		peer chaincode invoke -o orderer.tc.com:7050  --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n foreigntradecc -c $argsstr >&log.txt
 	fi
 	res=$?
 	cat log.txt
@@ -351,7 +358,7 @@ echo "Foreign Trade  End to End application completed."
 echo ---------------------------
 
 sleep 3600
-
+TRADE_ID="$(($TRADE_ID + 1))"
 done
 )
 
