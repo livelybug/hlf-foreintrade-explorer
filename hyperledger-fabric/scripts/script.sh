@@ -177,6 +177,22 @@ instantiateChaincode () {
 	echo
 }
 
+resetChaincodeState () {
+	PEER=$1
+	setGlobals $PEER
+	argsstr='{"Args":["resetState","'"$TRADE_ID"'","TC_B_1","TC_S_1","SKU001","10","1"]}'
+	if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "false" ]; then
+		peer chaincode invoke -o orderer.tc.com:7050 -C $CHANNEL_NAME -n foreigntradecc -c $argsstr >&log.txt
+	else
+		peer chaincode invoke -o orderer.tc.com:7050  --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n foreigntradecc -c $argsstr >&log.txt
+	fi
+	res=$?
+	cat log.txt
+	verifyResult $res "Chaincode instantiation on PEER$PEER on channel '$CHANNEL_NAME' failed."
+	echo "Chaincode Instantiation on PEER $PEER on channel '$CHANNEL_NAME' is successful. "
+	echo
+}
+
 chaincodeQuery () {
   PEER=$1
   echo "Querying on PEER$PEER on channel '$CHANNEL_NAME'."
@@ -357,8 +373,18 @@ echo ---------------------------
 echo "Foreign Trade  End to End application completed."
 echo ---------------------------
 
-sleep 3600
+sleep 3
 TRADE_ID="$(($TRADE_ID + 1))"
+
+#Reset chaincode state
+echo "Reseting chaincode state on Org1TC/peer1."
+resetChaincodeState 1
+echo ---------------------------
+#Query chaincode on a different peer
+echo "Querying chaincode on Org2BANK/peer0."
+chaincodeQuery 2
+echo ---------------------------
+
 done
 )
 

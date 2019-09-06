@@ -49,6 +49,9 @@ func (t *TradeContract) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	} else if function == "shipmentDelivered" {
 
 		return t.shipmentDelivered(stub, args)
+	} else if function == "resetState" {
+
+		return t.resetState(stub, args)
 	} else if function == "query" {
 
 		return t.query(stub, args)
@@ -206,6 +209,29 @@ func (t *TradeContract) shipmentDelivered(stub shim.ChaincodeStubInterface, args
 		return shim.Error(err.Error())
 	}
 	stub.PutState(tradeId, tcBytes1)
+
+	return shim.Success(nil)
+}
+
+func (t *TradeContract) resetState(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	tradeId := args[0]
+	buyerTaxId := args[1]
+	sellerTaxId := args[2]
+	skuid := args[3]
+	tradePrice, _ := strconv.Atoi(args[4])
+	shippingPrice, _ := strconv.Atoi(args[5])
+
+	tradeContract := trade{
+		TradeId:       tradeId,
+		BuyerTaxId:    buyerTaxId,
+		SellerTaxId:   sellerTaxId,
+		Skuid:         skuid,
+		TradePrice:    tradePrice,
+		ShippingPrice: shippingPrice,
+		Status:        "Trade initiated"}
+
+	tcBytes, _ := json.Marshal(tradeContract)
+	stub.PutState(tradeContract.TradeId, tcBytes)
 
 	return shim.Success(nil)
 }
