@@ -373,7 +373,7 @@ echo ---------------------------
 echo "Foreign Trade  End to End application completed."
 echo ---------------------------
 
-sleep 3
+sleep 3600
 TRADE_ID="$(($TRADE_ID + 1))"
 
 #Reset chaincode state
