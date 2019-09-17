@@ -12,9 +12,9 @@ function restartExplorer() {
     cd scripts
     node restart.js
     cd ..
+    docker-compose down
     rm -rf examples/net1/pgdata/*
     ls examples/net1/pgdata/
-    docker-compose down
     docker-compose up -d
 }
 
